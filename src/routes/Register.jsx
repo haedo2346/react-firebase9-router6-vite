@@ -6,6 +6,8 @@ import { erroresFirebase } from "../utils/erroresFirebase";
 import FormError from "../components/FormError";
 import formValidate from "../utils/formValidate";
 import FormInput from "../components/FormInput";
+import Title from "../components/Title";
+import Button from "../components/Button";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -27,13 +29,14 @@ const Register = () => {
       navigate("/");
     } catch (error) {
       console.log(error.code);
-      setError("firebase", { message: erroresFirebase(error.code) });
+      const { code, message } = erroresFirebase(error.code);
+      setError(code, { message: message });
     }
   };
 
   return (
     <>
-      <h1>Register</h1>
+      <Title text="registrar" />
 
       <FormError error={errors.firebase} />
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -44,8 +47,9 @@ const Register = () => {
             required: required,
             pattern: patternEmail,
           })}
+          label="Ingresa tu correo"
+          error={errors.email}
         ></FormInput>
-
         <FormError error={errors.email} />
 
         <FormInput
@@ -55,20 +59,23 @@ const Register = () => {
             minLength: minLength,
             validate: validateTrim,
           })}
+          label="Ingresa tu contraseña"
+          error={errors.password}
         ></FormInput>
-
         <FormError error={errors.password} />
 
         <FormInput
           type="password"
           placeholder="Ingrese password de nuevo"
           {...register("password2", {
-            validate: validateEquals(getValues),
+            validate: validateEquals(getValues("password")),
           })}
+          label="Ingresa tu contraseña nuevamente"
+          error={errors.password2}
         ></FormInput>
-
         <FormError error={errors.password2} />
-        <button type="submit">Register</button>
+
+        <Button text="Registrar" type="submit" />
       </form>
     </>
   );

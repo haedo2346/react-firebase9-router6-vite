@@ -6,6 +6,7 @@ import { erroresFirebase } from "../utils/erroresFirebase";
 import FormInput from "../components/FormInput";
 import FormError from "../components/FormError";
 import formValidate from "../utils/formValidate";
+import Button from "../components/Button";
 
 const Login = () => {
   const { loginUser } = useContext(UserContext);
@@ -24,8 +25,8 @@ const Login = () => {
       await loginUser(data.email, data.password);
       navigate("/");
     } catch (error) {
-      console.log(error.code);
-      setError("firebase", { message: erroresFirebase(error.code) });
+      const { code, message } = erroresFirebase(error.code);
+      setError(code, { message: message });
     }
   };
 
@@ -42,6 +43,7 @@ const Login = () => {
             required: required,
             pattern: patternEmail,
           })}
+          error={errors.email}
         ></FormInput>
 
         <FormError error={errors.email} />
@@ -53,11 +55,12 @@ const Login = () => {
             minLength: minLength,
             validate: validateTrim,
           })}
+          error={errors.password}
         ></FormInput>
 
         <FormError error={errors.password} />
 
-        <button type="submit">Login</button>
+        <Button text="Login" type="submit" />
       </form>
     </>
   );

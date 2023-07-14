@@ -1,15 +1,21 @@
 export const erroresFirebase = (code) => {
     switch (code) {
         case "auth/email-already-in-use":          
-          return "Ya esta registrado este usuario"
+          return {code: "email", message:"Ya esta registrado este usuario"}
+
         case "auth/invalid-email":
-            return "Formato email no válido"
+          return {code: "email", message:"Formato email no válido"}
+            
         case "auth/user-not-found":
-            return "Usuario no registrado"
+          return {code: "email", message:"Usuario no registrado"}
+             
+
         case "auth/wrong-password":
-          return "Contraseña no registrada"
+          return {code: "password", message:"Contraseña equivocada"}
+          
           
         default:
-          console.log("ocurrio un error en el server");
+          return {code: "email", message:"ocurrio un error en el server"}
+          
           }
 }
