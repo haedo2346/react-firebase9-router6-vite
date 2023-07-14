@@ -1,45 +1,62 @@
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { UserContext } from "../context/UserProvider";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { erroresFirebase } from "../utils/erroresFirebase";
+import FormInput from "../components/FormInput";
+import FormError from "../components/FormError";
+import formValidate from "../utils/formValidate";
 
 const Login = () => {
-  const [email, setEmail] = useState("lau@hotmail.com");
-  const [password, setPassword] = useState("123456");
-
   const { loginUser } = useContext(UserContext);
-
   const navigate = useNavigate();
+  const { required, patternEmail, minLength, validateTrim } = formValidate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    console.log("Procesando form: ", email, password);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setError,
+  } = useForm({ defaultValues: { email: "ha@hotmail.com" } });
+
+  const onSubmit = async (data) => {
     try {
-      await loginUser(email, password);
-      console.log("usuario logueado");
+      await loginUser(data.email, data.password);
       navigate("/");
     } catch (error) {
-      console.log(error);
+      console.log(error.code);
+      setError("firebase", { message: erroresFirebase(error.code) });
     }
   };
 
   return (
     <>
       <h1>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <input
+
+      <FormError error={errors.firebase} />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <FormInput
           type="email"
           placeholder="Ingrese email"
-          value={email}
-          name="email"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
+          {...register("email", {
+            required: required,
+            pattern: patternEmail,
+          })}
+        ></FormInput>
+
+        <FormError error={errors.email} />
+
+        <FormInput
           type="password"
           placeholder="Ingrese password"
-          name="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          {...register("password", {
+            minLength: minLength,
+            validate: validateTrim,
+          })}
+        ></FormInput>
+
+        <FormError error={errors.password} />
+
         <button type="submit">Login</button>
       </form>
     </>
