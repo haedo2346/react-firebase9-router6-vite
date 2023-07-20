@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -10,6 +10,7 @@ import Button from "../components/Button";
 
 const Login = () => {
   const { loginUser } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { required, patternEmail, minLength, validateTrim } = formValidate();
 
@@ -18,15 +19,18 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
     setError,
-  } = useForm({ defaultValues: { email: "ha@hotmail.com" } });
+  } = useForm();
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       await loginUser(data.email, data.password);
       navigate("/");
     } catch (error) {
       const { code, message } = erroresFirebase(error.code);
       setError(code, { message: message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -44,10 +48,9 @@ const Login = () => {
             pattern: patternEmail,
           })}
           error={errors.email}
-        ></FormInput>
-
-        <FormError error={errors.email} />
-
+        >
+          <FormError error={errors.email} />
+        </FormInput>
         <FormInput
           type="password"
           placeholder="Ingrese password"
@@ -56,11 +59,10 @@ const Login = () => {
             validate: validateTrim,
           })}
           error={errors.password}
-        ></FormInput>
-
-        <FormError error={errors.password} />
-
-        <Button text="Login" type="submit" />
+        >
+          <FormError error={errors.password} />
+        </FormInput>
+        <Button text="Login" color="blue" type="submit" loading={loading} />
       </form>
     </>
   );

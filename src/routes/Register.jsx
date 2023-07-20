@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { UserContext } from "../context/UserProvider";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -8,9 +8,11 @@ import formValidate from "../utils/formValidate";
 import FormInput from "../components/FormInput";
 import Title from "../components/Title";
 import Button from "../components/Button";
+import ButtonLoading from "../components/ButtonLoading";
 
 const Register = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const { registerUser } = useContext(UserContext);
   const { required, patternEmail, minLength, validateTrim, validateEquals } =
     formValidate();
@@ -25,12 +27,15 @@ const Register = () => {
 
   const onSubmit = async (data) => {
     try {
+      setLoading(true);
       await registerUser(data.email, data.password);
       navigate("/");
     } catch (error) {
       console.log(error.code);
       const { code, message } = erroresFirebase(error.code);
       setError(code, { message: message });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,8 +54,9 @@ const Register = () => {
           })}
           label="Ingresa tu correo"
           error={errors.email}
-        ></FormInput>
-        <FormError error={errors.email} />
+        >
+          <FormError error={errors.email} />
+        </FormInput>
 
         <FormInput
           type="password"
@@ -61,8 +67,9 @@ const Register = () => {
           })}
           label="Ingresa tu contraseña"
           error={errors.password}
-        ></FormInput>
-        <FormError error={errors.password} />
+        >
+          <FormError error={errors.password} />
+        </FormInput>
 
         <FormInput
           type="password"
@@ -72,10 +79,11 @@ const Register = () => {
           })}
           label="Ingresa tu contraseña nuevamente"
           error={errors.password2}
-        ></FormInput>
-        <FormError error={errors.password2} />
+        >
+          <FormError error={errors.password2} />
+        </FormInput>
 
-        <Button text="Registrar" type="submit" />
+        <Button text="Registrar" type="submit" loading={loading} color="blue" />
       </form>
     </>
   );

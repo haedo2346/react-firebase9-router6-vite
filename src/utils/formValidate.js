@@ -1,4 +1,4 @@
-const formValidate = (getValues) => {
+const formValidate = () => {
   return{
     required: {
         value: true,
@@ -8,6 +8,11 @@ const formValidate = (getValues) => {
         value:
           /[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})/,
         message: "formato de email incorrecto",
+      },
+      patternUrl: {
+        value:
+          /^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$/,
+        message: "formato de url incorrecto",
       },
       minLength: { value: 6, message: "minimo de 6 caracteres" },
       
